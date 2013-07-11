@@ -71,6 +71,7 @@ import de.schildbach.wallet.util.ChainServiceTransactionBroadcaster;
 import de.schildbach.wallet.util.CrashReporter;
 import de.schildbach.wallet.util.Io;
 import de.schildbach.wallet.util.LinuxSecureRandom;
+import de.schildbach.wallet.util.PaymentChannelContractToCreatorMap;
 import de.schildbach.wallet.util.WalletUtils;
 import de.schildbach.wallet_test.R;
 
@@ -82,6 +83,7 @@ public class WalletApplication extends Application
 	private SharedPreferences prefs;
 	private ActivityManager activityManager;
 
+	private PaymentChannelContractToCreatorMap contractHashToCreatorMap;
 	private Intent blockchainServiceIntent;
 	private Intent blockchainServiceCancelCoinsReceivedIntent;
 	private Intent blockchainServiceResetBlockchainIntent;
@@ -224,6 +226,10 @@ public class WalletApplication extends Application
 	public Wallet getWallet()
 	{
 		return wallet;
+	}
+
+	public PaymentChannelContractToCreatorMap getContractHashToCreatorMap() {
+		return contractHashToCreatorMap;
 	}
 
 	private void migrateWalletToProtobuf()
@@ -374,6 +380,9 @@ public class WalletApplication extends Application
 	 * Adds all necessary wallet extensions for use/deserialization
 	 */
 	private void addWalletExtensions() {
+		contractHashToCreatorMap =
+				(PaymentChannelContractToCreatorMap) wallet.addOrGetExistingExtension(new PaymentChannelContractToCreatorMap(wallet));
+
 		wallet.addOrGetExistingExtension(new StoredPaymentChannelClientStates(wallet, new ChainServiceTransactionBroadcaster(this)));
 	}
 
